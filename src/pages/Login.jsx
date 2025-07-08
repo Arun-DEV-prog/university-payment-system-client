@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router"; // Fixed import
+import { AuthContext } from "../contexts/AuthContext";
+import { toast } from "react-toastify";
 
 const Login = () => {
+  const { signIn } = useContext(AuthContext); // Fixed: useContext instead of use
   const {
     register,
     handleSubmit,
@@ -9,7 +13,14 @@ const Login = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data);
+    signIn(data.email, data.password)
+      .then(() => {
+        toast.success("✅ Login Successful");
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("❌ Login failed. Please check your credentials.");
+      });
   };
 
   return (
@@ -63,6 +74,13 @@ const Login = () => {
             <button type="submit" className="btn btn-neutral w-full mt-4">
               Login
             </button>
+
+            <p className="font-bold text-center mt-4">
+              Don't have an account?{" "}
+              <Link className="text-blue-600" to="/register">
+                Register
+              </Link>
+            </p>
           </form>
         </div>
       </div>

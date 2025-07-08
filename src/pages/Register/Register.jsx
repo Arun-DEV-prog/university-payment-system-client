@@ -1,16 +1,34 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router"; // Fixed import
+
+import { toast } from "react-toastify";
 import "./page.css";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const Register = () => {
+  const { signUp } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log("Registration Data:", data);
+    signUp(data.email, data.password)
+      .then((result) => {
+        console.log("Registered user:", result.user);
+        navigate("/login");
+        toast.success("✅ Registration successful!");
+        reset();
+      })
+      .catch((err) => {
+        console.error("Error registering:", err.message);
+        toast.error(`❌ ${err.message}`);
+      });
   };
 
   return (
@@ -124,6 +142,13 @@ const Register = () => {
               Register
             </button>
           </form>
+
+          <p className="font-bold text-center mt-4">
+            Already Have An Account?{" "}
+            <Link className="text-blue-600" to="/login">
+              Login
+            </Link>
+          </p>
         </div>
       </div>
     </div>
